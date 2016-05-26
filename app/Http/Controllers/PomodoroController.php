@@ -11,7 +11,7 @@ class PomodoroController extends Controller
     //
     public function display()
     {
-    	echo "Hello World";
-    	// DB::
+
+        return view('display');
     }
 }
