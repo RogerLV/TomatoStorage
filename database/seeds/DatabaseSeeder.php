@@ -11,6 +11,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        DB::table('Project')->insert([
+                'name' => 'Attendence System'
+        ]);
         // $this->call(UsersTableSeeder::class);
     }
 }
