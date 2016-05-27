@@ -10,6 +10,14 @@ class PomodoroController extends Controller
 {
     public function newStory(Request $request)
     {
+        if (empty($projectID = $request->input('projectID'))
+            || empty($newStoryName = $request->input('newStoryName'))) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'data error'
+            ]);
+            return;
+        }
         $projectID = $request->input('projectID');
         $newStoryName = $request->input('newStoryName');
 
@@ -18,7 +26,10 @@ class PomodoroController extends Controller
             'projectID' => $request->input('projectID')
         ]);
 
-        echo json_encode(['id' => $id]);
+        echo json_encode([
+            'status' => 'good',
+            'id' => $id
+        ]);
     }
 
     public function display()
@@ -31,7 +42,20 @@ class PomodoroController extends Controller
         foreach ($rawData as $entry) {
             $projects[$entry->id] = $entry->name;
         }
-        // echo "<pre>"; var_dump($projects); exit;
+
+        // get stories info
+        $rawData = DB::table('Story')
+                    ->join('Project', 'Project.id', '=', 'Story.projectID')
+                    ->select(
+                        'Story.id',
+                        'Story.name',
+                        'Story.projectID'
+                    )
+                    ->get();
+        $stories = [];
+        foreach ($rawData as $entry) {
+            $stories[$entry->projectID][$entry->id] = $entry->name;
+        }
 
         // //get all task info
         // $rawData = DB::table('Project')
@@ -52,6 +76,7 @@ class PomodoroController extends Controller
         //     $taskInfo[$entry]
         // }
         return view('display')
-                ->with('projects', $projects);
+                ->with('projects', $projects)
+                ->with('stories', $stories);
     }
 }

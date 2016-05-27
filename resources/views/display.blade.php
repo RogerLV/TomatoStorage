@@ -19,18 +19,22 @@
         <div class="col-md-6">
             <h2>Activities List</h2>
             <div id="activity-list">
-                @foreach($projects as $projectID => $projectName)
+                @foreach ($projects as $projectID => $projectName)
                     <h4>{{ $projectName }}</h4>
+
                     <div data-projectid="{{ $projectID }}">
+                        @if (isset($stories[$projectID]))
+                        @foreach ($stories[$projectID] as $storyID => $storyName)
+                            <div class="panel panel-default">
+                                <div class="panel-heading">{{ $storyName }}</div>
+                                <table class="table"></table>
+                            </div>
+                        @endforeach
+                        @endif
+
                         <button class="btn btn-primary btn-xs show-modal" 
                             data-toggle="modal" data-target="#add-story-modal">Add Story</button>
                     </div>
-                    <!-- <div class="panel panel-default">
-                        <div class="panel-heading">Panel heading</div>
-                        <table class="table"></table>
-                    </div> -->
-
-                    
                 @endforeach
             </div>
 
@@ -83,7 +87,10 @@
                 },
                 type: "POST",
                 success: function(data){
-                    console.log(data);
+                    var data = $.parseJSON(data);
+                    if ('good' == data.status) {
+                        location.reload();
+                    }
                 }
             });
         });
@@ -91,7 +98,7 @@
         $('#add-story-modal').on('show.bs.modal', function(event){
             var button = $(event.relatedTarget);
             projectID = button.parent().data('projectid');
-            var projectName = button.parent().prev().text();
+            var projectName = button.parent().prev('h4').text();
 
             $('#project-name-in-modal').text(projectName);
         });
