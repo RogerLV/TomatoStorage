@@ -8,6 +8,44 @@ use DB;
 
 class PomodoroController extends Controller
 {
+    private function getProjectList()
+    {
+        $rawData = DB::table('Project')
+                        ->select('id', 'name')
+                        ->get();
+        $projects = [];
+        foreach ($rawData as $entry) {
+            $projects[$entry->id] = $entry->name;
+        }
+
+        return $projects;
+    }
+
+    public function listStory(Request $request)
+    {
+        $projectID = $request->input('projectID');
+
+        $rawData = DB::table('Story')
+                    ->select('id', 'name')
+                    ->where('projectID', '=', $projectID)
+                    ->get();
+
+        $stories = [];
+        foreach ($rawData as $entry) {
+            $stories[$entry->id] = $entry->name;
+        }
+
+        echo json_encode($stories);
+        return;
+    }
+
+    public function listProjects()
+    {
+        $projects = $this->getProjectList();
+        echo json_encode($projects);
+        return;
+    }
+
     public function newStory(Request $request)
     {
         if (empty($projectID = $request->input('projectID'))
@@ -18,8 +56,6 @@ class PomodoroController extends Controller
             ]);
             return;
         }
-        $projectID = $request->input('projectID');
-        $newStoryName = $request->input('newStoryName');
 
         $id = DB::table('Story')->insertGetId([
             'name' => $request->input('newStoryName'),
@@ -34,15 +70,6 @@ class PomodoroController extends Controller
 
     public function display()
     {
-        //first select all projects
-        $rawData = DB::table('Project')
-                        ->select('id', 'name')
-                        ->get();
-        $projects = [];
-        foreach ($rawData as $entry) {
-            $projects[$entry->id] = $entry->name;
-        }
-
         // get stories info
         $rawData = DB::table('Story')
                     ->join('Project', 'Project.id', '=', 'Story.projectID')
@@ -76,7 +103,7 @@ class PomodoroController extends Controller
         //     $taskInfo[$entry]
         // }
         return view('display')
-                ->with('projects', $projects)
+                ->with('projects', $this->getProjectList())
                 ->with('stories', $stories);
     }
 }

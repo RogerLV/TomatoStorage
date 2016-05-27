@@ -18,6 +18,12 @@
     <div class="container">
         <div class="col-md-6">
             <h2>Activities List</h2>
+
+            <button class="btn btn-primary btn-xs" 
+                    data-toggle="modal" data-target="#add-activity-modal">Add Story</button>
+            <br>
+            <br>
+
             <div id="activity-list">
                 @foreach ($projects as $projectID => $projectName)
                     <h4>{{ $projectName }}</h4>
@@ -32,25 +38,48 @@
                         @endforeach
                         @endif
 
-                        <button class="btn btn-primary btn-xs show-modal" 
-                            data-toggle="modal" data-target="#add-story-modal">Add Story</button>
+        
                     </div>
                 @endforeach
             </div>
 
-            <div class="modal fade" id="add-story-modal">
+            <div class="modal fade" id="add-activity-modal">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal">
                                 <span aria-hidden="true">&times;</span>
                             </button>
-                            <h4>Add New Story</h4>
+                            <h4>Add New Activity</h4>
                         </div>
 
                         <div class="modal-body">
-                            <h4 id="project-name-in-modal"></h4>
-                            <input type="text" id="new-story-name">
+                            <div class="well well-sm">
+                                <label for="select-activity-type" class="control-label">Add Type</label>
+                                <select class="form-control" id="select-activity-type">
+                                    <option value=0 disabled selected></option>
+                                    <option value="project">Project</option>
+                                    <option value="story">Story</option>
+                                    <option value="task">Task</option>
+                                </select>
+
+                                <label for="select-project" class="control-label">Select Project</label>
+                                <select disabled class="form-control modal-input story task" id="select-project"></select>
+
+                                <label for="select-story" class="control-label">Select Story</label>
+                                <select disabled class="form-control modal-input" id="select-story"></select>
+                            </div>
+
+                            <div class="well well-sm">
+                                <label for="fill-activity-name" class="control-label">Activity Name</label>
+                                <input disabled class="form-control modal-input project story task" id="fill-activity-name">
+
+                                <label for="fill-activity-priority" class="control-label">Priority</label>
+                                <input disabled class="form-control modal-input story task" type="number" id="fill-activity-priority">
+
+                                <label for="fill-est-pomos" class="control-label">Estimated Pomodoros</label>
+                                <input disabled class="form-control modal-input task" type="number" id="fill-est-pomos">
+                            </div>
                         </div>
 
                         <div class="modal-footer">
@@ -72,35 +101,69 @@
 
 <script type="text/javascript">
     $(document).ready(function(){
-        var projectID = 0;
+
         $('#activity-list').accordion();
 
-        $('#add-story').click(function(){
-            var newStoryName = $('#new-story-name').val();
+        var createLevel = null;
 
-            //ajax to add  new story
-            $.ajax({
-                url: "{{ url('newstory') }}",
-                data: {
-                    projectID: projectID,
-                    newStoryName: newStoryName
-                },
-                type: "POST",
-                success: function(data){
-                    var data = $.parseJSON(data);
-                    if ('good' == data.status) {
-                        location.reload();
-                    }
-                }
+        var resetDisabledInput = function(){
+            $('#add-activity-modal').find('.modal-input').prop('disabled', true);
+        };
+
+        var assembleOption = function(returnData, selector){
+            var optionStr = "<option disabled selected></option>";
+            $.each(returnData, function(id, name){
+                optionStr += "<option value='"+id+"'>"+name+"</option>";
             });
+            selector.empty().append(optionStr);
+        }
+
+        $('#add-activity-modal').on('show.bs.modal', function(event){
+            resetDisabledInput();
+            $('#select-activity-type').val(0);
         });
 
-        $('#add-story-modal').on('show.bs.modal', function(event){
-            var button = $(event.relatedTarget);
-            projectID = button.parent().data('projectid');
-            var projectName = button.parent().prev('h4').text();
+        $('#select-activity-type').change(function(){
+            resetDisabledInput();
+            createLevel = $(this).val();
 
-            $('#project-name-in-modal').text(projectName);
+            // enable related inputs
+            $('#add-activity-modal').find('.modal-input.'+createLevel).prop('disabled', false);
+            
+            if (createLevel != 'project') {
+                // get project list
+                $.ajax({
+                    url: "{{ url('getProjectList') }}",
+                    type: 'GET',
+                    success: function(data){
+                        var data = $.parseJSON(data);
+                        assembleOption(data, $('#select-project'));
+                    }
+                });
+            }
+        });
+
+        $('#select-project').change(function(){
+            // check create level
+            if ('task' != createLevel) {
+                return;
+            }
+
+            // enable story selector
+            $('#select-story').prop('disabled', false);
+
+            // get story values
+            var projectID = $(this).val();
+
+            $.ajax({
+                url: "{{ url('getStoryList') }}",
+                data: {projectID: projectID},
+                type: 'GET',
+                success: function(data){
+                    var data = $.parseJSON(data);
+                    assembleOption(data, $('#select-story'));
+                }
+            });
         });
     });
 </script>

@@ -13,3 +13,5 @@
 
 Route::get('/', 'PomodoroController@display');
 Route::post('newstory', 'PomodoroController@newStory');
+Route::get('getProjectList', 'PomodoroController@listProjects');
+Route::get('getStoryList', 'PomodoroController@listStory');
