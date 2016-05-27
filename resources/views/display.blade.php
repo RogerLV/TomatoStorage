@@ -41,10 +41,12 @@
                             <button type="button" class="close" data-dismiss="modal">
                                 <span aria-hidden="true">&times;</span>
                             </button>
+                            <h4>Add New Story</h4>
                         </div>
 
                         <div class="modal-body">
-                            
+                            <h4 id="project-name-in-modal"></h4>
+                            <input type="text" id="new-story-name">
                         </div>
 
                         <div class="modal-footer">
@@ -66,18 +68,32 @@
 
 <script type="text/javascript">
     $(document).ready(function(){
+        var projectID = 0;
         $('#activity-list').accordion();
 
         $('#add-story').click(function(){
+            var newStoryName = $('#new-story-name').val();
+
             //ajax to add  new story
+            $.ajax({
+                url: "{{ url('newstory') }}",
+                data: {
+                    projectID: projectID,
+                    newStoryName: newStoryName
+                },
+                type: "POST",
+                success: function(data){
+                    console.log(data);
+                }
+            });
         });
 
         $('#add-story-modal').on('show.bs.modal', function(event){
             var button = $(event.relatedTarget);
-            var projectID = button.parent().data('projectid');
+            projectID = button.parent().data('projectid');
             var projectName = button.parent().prev().text();
-            console.log(projectID);
-            console.log(projectName);
+
+            $('#project-name-in-modal').text(projectName);
         });
     });
 </script>

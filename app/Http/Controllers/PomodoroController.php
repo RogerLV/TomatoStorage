@@ -8,7 +8,19 @@ use DB;
 
 class PomodoroController extends Controller
 {
-    //
+    public function newStory(Request $request)
+    {
+        $projectID = $request->input('projectID');
+        $newStoryName = $request->input('newStoryName');
+
+        $id = DB::table('Story')->insertGetId([
+            'name' => $request->input('newStoryName'),
+            'projectID' => $request->input('projectID')
+        ]);
+
+        echo json_encode(['id' => $id]);
+    }
+
     public function display()
     {
         //first select all projects

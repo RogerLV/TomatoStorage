@@ -11,8 +11,5 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('pomodoro', 'PomodoroController@display');
+Route::get('/', 'PomodoroController@display');
+Route::post('newstory', 'PomodoroController@newStory');
