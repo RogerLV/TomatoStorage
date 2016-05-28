@@ -2,6 +2,8 @@
 
 namespace App\Logic\Activity;
 
+use App\Logic\Util;
+
 class ActivityFactory
 {
     public static function create($activityInfo)
@@ -17,12 +19,7 @@ class ActivityFactory
                 return new Task($activityInfo);
 
             default:
-                // TODO: policies and algorithms should be seperated.
-                echo json_encode([
-                    'status' => 'bad',
-                    'message' => "Incorrect Activity Type"
-                ]);
-                exit;
+                Util::returnError("Incorrect Activity Type");
         }
     }
 }

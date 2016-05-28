@@ -18,12 +18,7 @@ class Task extends Activity
             || empty($info['priority'])
             || empty($info['estPomos'])) {
 
-            // TODO: policies and algorithms should be seperated.
-            echo json_encode([
-                'status' => 'bad',
-                'message' => "Data Missed"
-            ]);
-            exit;
+            $this->dataMissing();
         }
 
         $this->storyID = $info['storyID'];
@@ -42,5 +37,30 @@ class Task extends Activity
                 'estPomos' => $this->estPomos,
                 'storyID' => $this->storyID
         ]);
+    }
+
+    public static function getList()
+    {
+        $rawData = DB::table('Task')
+                        ->select(
+                            'Task.id',
+                            'Task.name',
+                            'Task.priority',
+                            'Task.estPomos',
+                            'Task.usedPomos',
+                            'Task.storyID'
+                        )
+                        ->get();
+        $tasks = [];
+        foreach ($rawData as $entry) {
+            $tasks[$entry->storyID][$entry->id] = [
+                'name' => $entry->name,
+                'priority' => $entry->priority,
+                'estPomos' => $entry->estPomos,
+                'usedPomos' => $entry->usedPomos
+            ];
+        }
+
+        return $tasks;
     }
 }

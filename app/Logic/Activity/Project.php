@@ -11,13 +11,7 @@ class Project extends Activity
     public function __construct($info)
     {
         if (empty($info['activityName'])) {
-
-            // TODO: policies and algorithms should be seperated.
-            echo json_encode([
-                'status' => 'bad',
-                'message' => "Data Missed"
-            ]);
-            exit;
+            $this->dataMissing();
         }
 
         $this->name = $info['activityName'];
@@ -28,5 +22,18 @@ class Project extends Activity
     {
         DB::table($this->tableName)
             ->insert(['name' => $this->name]);
+    }
+
+    public static function getList()
+    {
+        $rawData = DB::table('Project')
+                ->select('id', 'name')
+                ->get();
+        $projects = [];
+        foreach ($rawData as $entry) {
+            $projects[$entry->id] = $entry->name;
+        }
+
+        return $projects;
     }
 }
