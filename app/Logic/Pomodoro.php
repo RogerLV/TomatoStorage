@@ -6,6 +6,32 @@ use DB;
 
 class Pomodoro
 {
+    public static function completePomo($taskID)
+    {
+        // get used Pomos in task table
+        // this part should be get from object
+        $entry = DB::table('Task')
+                    ->select('usedPomos')
+                    ->where('id', '=', $taskID)
+                    ->first();
+        $usedPomos = $entry->usedPomos;
+        $usedPomos++;
+
+        // update DB: Task table update usedPomos
+        DB::table('Task')
+            ->where('id', '=', $taskID)
+            ->update(['usedPomos' => $usedPomos]);
+
+        // update DB: Pomodoro table insert record
+        DB::table('Pomodoro')->insert([
+            'date' => date('Y-m-d'),
+            'taskID' => $taskID,
+            'seq' => $usedPomos,
+            'addedTime' => date('H:i:s')
+        ]);
+
+    }
+
     public static function getTodoTasks()
     {
         $today = date('Y-m-d');

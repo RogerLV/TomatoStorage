@@ -53,4 +53,11 @@ class PomodoroController extends Controller
         Pomodoro::addTodayTodo($taskID);
         echo json_encode(['status' => 'good']);
     }
+
+    public function completePomo(Request $request)
+    {
+        $taskID = $request->input('taskID');
+        Pomodoro::completePomo($taskID);
+        echo json_encode(['status' => 'good']);
+    }
 }

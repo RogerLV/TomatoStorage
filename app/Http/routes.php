@@ -16,3 +16,4 @@ Route::post('addActivity', 'PomodoroController@addActivity');
 Route::get('getProjectList', 'PomodoroController@listProjects');
 Route::get('getStoryList', 'PomodoroController@listStory');
 Route::post('addTodo', 'PomodoroController@addTodo');
+Route::post('completePomo', 'PomodoroController@completePomo');
