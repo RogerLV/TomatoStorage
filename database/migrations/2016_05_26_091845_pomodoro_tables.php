@@ -33,13 +33,11 @@ class PomodoroTables extends Migration
             $table->integer('storyID')->reference('id')->on('Story');
         });
         
-        Schema::create('PomoDetail', function (Blueprint $table) {
+        Schema::create('Pomodoro', function (Blueprint $table) {
             $table->increments('id');
             $table->date('date');
             $table->integer('taskID')->reference('id')->on('Task');
-            $table->integer('seqNo');
-            $table->time('begin')->nullable();
-            $table->time('end')->nullable();
+            $table->time('addedTime');
         });
     }
 
@@ -54,6 +52,6 @@ class PomodoroTables extends Migration
         Schema::drop('Project');
         Schema::drop('Story');
         Schema::drop('Task');
-        Schema::drop('PomoDetail');
+        Schema::drop('Pomodoro');
     }
 }

@@ -9,4 +9,4 @@
 
 @include('activitiesList.addActivityModal')
 
-@include('activitiesList.addActivityJS');
+@include('activitiesList.addActivityJS')
