@@ -10,6 +10,7 @@ use App\Logic\Activity\ActivityFactory;
 use App\Logic\Activity\Project;
 use App\Logic\Activity\Story;
 use App\Logic\Activity\Task;
+use App\Logic\Pomodoro;
 
 
 class PomodoroController extends Controller
@@ -17,7 +18,6 @@ class PomodoroController extends Controller
     public function listStory(Request $request)
     {
         $projectID = $request->input('projectID');
-
         echo json_encode(Story::getList($projectID));
         return;
     }
@@ -44,5 +44,12 @@ class PomodoroController extends Controller
                 ->with('projects', Project::getList())
                 ->with('stories', Story::getList())
                 ->with('tasks', Task::getList());
+    }
+
+    public function addTodo(Request $request)
+    {
+        $taskID = $request->input('taskID');
+        Pomodoro::addTodayTodo($taskID);
+        echo json_encode(['status' => 'good']);
     }
 }

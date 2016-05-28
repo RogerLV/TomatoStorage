@@ -26,6 +26,10 @@
                                     <td>{{ $taskInfo['priority'] }}</td>
                                     <td>{{ $taskInfo['estPomos'] }}</td>
                                     <td>{{ $taskInfo['usedPomos'] }}</td>
+                                    <td>
+                                        <button class="btn btn-primary btn-xs add-to-do" 
+                                                data-taskid="{{ $taskID }}">Do it!</button>
+                                    </td>
                                 </tr>
                             @endforeach
                             @endif
@@ -43,5 +47,20 @@
 <script type="text/javascript">
     $(document).ready(function(){
         $('#activity-list').accordion();
+
+        $('button.add-to-do').click(function(){
+            var taskID = $(this).data('taskid');
+            $.ajax({
+                url: "{{ url('addTodo') }}",
+                data: {taskID: taskID},
+                type: 'POST',
+                success: function(data){
+                    data = $.parseJSON(data);
+                    if ('good' == data.status) {
+                        location.reload();
+                    }
+                }
+            });
+        });
     });
 </script>
