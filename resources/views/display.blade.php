@@ -71,20 +71,20 @@
                             </div>
 
                             <div class="well well-sm">
-                                <label for="fill-activity-name" class="control-label">Activity Name</label>
-                                <input disabled class="form-control modal-input project story task" id="fill-activity-name">
+                                <label for="input-activity-name" class="control-label">Activity Name</label>
+                                <input disabled class="form-control modal-input project story task" id="input-activity-name">
 
-                                <label for="fill-activity-priority" class="control-label">Priority</label>
-                                <input disabled class="form-control modal-input story task" type="number" id="fill-activity-priority">
+                                <label for="input-activity-priority" class="control-label">Priority</label>
+                                <input disabled class="form-control modal-input story task" type="number" id="input-activity-priority">
 
-                                <label for="fill-est-pomos" class="control-label">Estimated Pomodoros</label>
-                                <input disabled class="form-control modal-input task" type="number" id="fill-est-pomos">
+                                <label for="input-est-pomos" class="control-label">Estimated Pomodoros</label>
+                                <input disabled class="form-control modal-input task" type="number" id="input-est-pomos">
                             </div>
                         </div>
 
                         <div class="modal-footer">
                             <button class="btn btn-default" data-dismiss="modal">Close</button>
-                            <button class="btn btn-primary" id="add-story">Add</button>
+                            <button class="btn btn-primary" id="btn-add-activity">Add</button>
                         </div>
                     </div>
                 </div>
@@ -162,6 +162,35 @@
                 success: function(data){
                     var data = $.parseJSON(data);
                     assembleOption(data, $('#select-story'));
+                }
+            });
+        });
+
+        $('#btn-add-activity').click(function(){
+            $.ajax({
+                url: "{{ url('addActivity') }}",
+                data: {
+                    activityType: $('#select-activity-type').val(),
+                    projectID: $('#select-project').val(),
+                    storyID: $('#select-story').val(),
+                    activityName: $('#input-activity-name').val(),
+                    priority: $('#input-activity-priority').val(),
+                    estPomos: $('#input-est-pomos').val()
+                },
+                type: 'POST',
+                success: function(data){
+                    data = $.parseJSON(data);
+                    if ('good' == data.status) {
+                        location.reload();
+                    } else {
+                        var div = "<div class='alert alert-danger'>"+data.message+"</div>";
+                        $('#add-activity-modal').find('div.modal-content').prepend(div);
+                        setTimeout(function(){
+                            $('.alert').hide('slow', function(){
+                                $(this).remove();
+                            });
+                        }, 2000);
+                    }
                 }
             });
         });

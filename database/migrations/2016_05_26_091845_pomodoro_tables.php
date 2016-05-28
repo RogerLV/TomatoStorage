@@ -20,6 +20,7 @@ class PomodoroTables extends Migration
         Schema::create('Story', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+            $table->integer('priority');
             $table->integer('projectID')->reference('id')->on('Project');
         });
         
@@ -27,8 +28,8 @@ class PomodoroTables extends Migration
             $table->increments('id');
             $table->string('name');
             $table->integer('priority');
-            $table->integer('estPomo');
-            $table->integer('usedPomo');
+            $table->integer('estPomos');
+            $table->integer('usedPomos')->default(0);
             $table->integer('storyID')->reference('id')->on('Story');
         });
         

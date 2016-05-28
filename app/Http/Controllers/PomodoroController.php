@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use DB;
+
+use App\Logic\Activity\Activity;
+use App\Logic\Activity\ActivityFactory;
+
 
 class PomodoroController extends Controller
 {
@@ -46,26 +49,13 @@ class PomodoroController extends Controller
         return;
     }
 
-    public function newStory(Request $request)
+    public function addActivity(Request $request)
     {
-        if (empty($projectID = $request->input('projectID'))
-            || empty($newStoryName = $request->input('newStoryName'))) {
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'data error'
-            ]);
-            return;
-        }
+        $activityInfo = $request->all();
+        $activity = ActivityFactory::create($activityInfo);
+        $activity->save();
 
-        $id = DB::table('Story')->insertGetId([
-            'name' => $request->input('newStoryName'),
-            'projectID' => $request->input('projectID')
-        ]);
-
-        echo json_encode([
-            'status' => 'good',
-            'id' => $id
-        ]);
+        echo json_encode(['status' => 'good']);
     }
 
     public function display()
@@ -84,24 +74,8 @@ class PomodoroController extends Controller
             $stories[$entry->projectID][$entry->id] = $entry->name;
         }
 
-        // //get all task info
-        // $rawData = DB::table('Project')
-        //             ->join('Story', 'Project.id', '=', 'Story.projectID')
-        //             ->join('Task', 'Story.id', '=', 'Task.storyID')
-        //             ->select(
-        //                 'Project.name',
-        //                 'Story.name',
-        //                 'Task.id',
-        //                 'Task.name',
-        //                 'Task.priority',
-        //                 'Task.estPomo',
-        //                 'Task.usedPomo'
-        //             )
-        //             ->get();
-        // $taskInfo = [];
-        // foreach ($rawData as $entry) {
-        //     $taskInfo[$entry]
-        // }
+        //get all task info
+
         return view('display')
                 ->with('projects', $this->getProjectList())
                 ->with('stories', $stories);

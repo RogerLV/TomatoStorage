@@ -14,6 +14,10 @@ class DatabaseSeeder extends Seeder
         DB::table('Project')->insert([
                 'name' => 'Attendence System'
         ]);
+        
+        DB::table('Project')->insert([
+                'name' => 'Tomato Storage'
+        ]);
         // $this->call(UsersTableSeeder::class);
     }
 }
