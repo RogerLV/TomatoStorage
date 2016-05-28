@@ -37,6 +37,7 @@ class PomodoroTables extends Migration
             $table->increments('id');
             $table->date('date');
             $table->integer('taskID')->reference('id')->on('Task');
+            $table->integer('seq');
             $table->time('addedTime');
         });
     }

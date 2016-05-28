@@ -8,12 +8,7 @@
         </div>
 
         <div class="col-md-6">
-            <h2>Today's task</h2>
+            @include('todoTask.index')
         </div>
     </div>
-@endsection
-
-
-@section('JavascriptContent')
-
 @endsection

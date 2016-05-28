@@ -43,7 +43,8 @@ class PomodoroController extends Controller
         return view('display')
                 ->with('projects', Project::getList())
                 ->with('stories', Story::getList())
-                ->with('tasks', Task::getList());
+                ->with('tasks', Task::getList())
+                ->with('todoTasks', Pomodoro::getTodoTasks());
     }
 
     public function addTodo(Request $request)
