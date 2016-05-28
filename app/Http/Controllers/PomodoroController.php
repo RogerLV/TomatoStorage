@@ -62,10 +62,10 @@ class PomodoroController extends Controller
     {
         // get stories info
         $rawData = DB::table('Story')
-                    ->join('Project', 'Project.id', '=', 'Story.projectID')
                     ->select(
                         'Story.id',
                         'Story.name',
+                        'Story.priority',
                         'Story.projectID'
                     )
                     ->get();
@@ -75,9 +75,29 @@ class PomodoroController extends Controller
         }
 
         //get all task info
+        $rawData = DB::table('Task')
+                        ->select(
+                            'Task.id',
+                            'Task.name',
+                            'Task.priority',
+                            'Task.estPomos',
+                            'Task.usedPomos',
+                            'Task.storyID'
+                        )
+                        ->get();
+        $tasks = [];
+        foreach ($rawData as $entry) {
+            $tasks[$entry->storyID][$entry->id] = [
+                'name' => $entry->name,
+                'priority' => $entry->priority,
+                'estPomos' => $entry->estPomos,
+                'usedPomos' => $entry->usedPomos
+            ];
+        }
 
         return view('display')
                 ->with('projects', $this->getProjectList())
-                ->with('stories', $stories);
+                ->with('stories', $stories)
+                ->with('tasks', $tasks);
     }
 }
